@@ -2665,9 +2665,16 @@ function showResult() {
   const ids = new Set();
   for (const dim of dimScores) { for (const id in dim) { if (!excluded.has(id)) ids.add(id); } }
   const ranked = [...ids].map(id => {
-    let prod = 1;
-    for (let d=0; d<5; d++) { const pct = dimMax[d] ? (dimScores[d][id] || 0) / dimMax[d] : 0; prod *= (pct + 0.15); }
-    return { id, balance: Math.pow(prod, 0.2) - 0.15 };
+    let sum = 0, min = 1, max = 0;
+    for (let d=0; d<5; d++) {
+      const pct = dimMax[d] ? (dimScores[d][id] || 0) / dimMax[d] : 0;
+      sum += pct;
+      if (pct < min) min = pct;
+      if (pct > max) max = pct;
+    }
+    const mean = sum / 5;
+    const bal = max > 0 ? (min / max) : 0;
+    return { id, balance: mean * (0.3 + 0.7 * bal) };
   }).sort((a,b) => b.balance - a.balance);
 
   const top = ranked[0];
@@ -2706,7 +2713,7 @@ function showResult() {
   const rankBox = document.getElementById('rRank');
   rankBox.innerHTML = '';
   ranked.slice(0, 6).forEach((r, i) => {
-    const pct = Math.round((r.balance / maxScore) * 100);
+    const pct = Math.round(r.balance * 100);
     const rf = figures[r.id];
     rankBox.innerHTML += `<div class="rank-item"><div class="name">${i===0?'★ ':''}${rf.name}</div><div class="rank-bar"><div class="rank-fill" style="width:${pct}%"></div></div><div class="pct">${pct}%</div></div>`;
   });
