@@ -71,14 +71,11 @@
   .rank-bar { flex: 1; height: 10px; background: var(--bg); border-radius: 999px; overflow: hidden; }
   .rank-fill { height: 100%; background: var(--accent); border-radius: 999px; transition: width .6s cubic-bezier(.22,.61,.36,1); }
   .rank-item .pct { width: 46px; text-align: right; font-size: 13px; color: var(--muted); }
-  .dim-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-  .dim-item .dim-name { width: 70px; font-weight: 600; font-size: 12px; color: var(--ink); flex: none; }
-  .dim-fig { display: flex; align-items: center; gap: 6px; width: 92px; flex: none; }
-  .dim-avatar { width: 22px; height: 22px; border-radius: 50%; background: var(--bg); color: var(--accent); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-size: 11px; font-family: var(--font-display); flex: none; }
-  .dim-fig-name { font-size: 12px; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .dim-item { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .dim-item .dim-name { width: 96px; font-weight: 600; font-size: 13px; color: var(--ink); flex: none; }
   .dim-bar { flex: 1; height: 8px; background: var(--bg); border-radius: 999px; overflow: hidden; }
   .dim-fill { height: 100%; background: var(--accent); border-radius: 999px; transition: width .6s cubic-bezier(.22,.61,.36,1); }
-  .dim-item .dim-pct { width: 38px; text-align: right; font-size: 12px; color: var(--muted); flex: none; }
+  .dim-item .dim-pct { width: 40px; text-align: right; font-size: 12px; color: var(--muted); flex: none; }
   .dims-text { margin-top: 14px; font-size: 14px; line-height: 1.7; color: var(--ink); text-align: left; }
   .hidden { display: none !important; }
   .fade-in { animation: fadeIn .45s ease; }
@@ -101,9 +98,9 @@
     <div class="stage" id="intro">
       <div class="kicker">历史人格测试</div>
       <h1>测测你是俄国革命的谁？</h1>
-      <p class="sub">收录 <b>40 位俄国革命人物</b>（布尔什维克 · 孟什维克 · 社会革命党 · 立宪民主党 · 白军 · 无政府主义者 · 文人），从<span class="tag">革命道路</span><span class="tag">经济路线</span><span class="tag">权力与手段</span><span class="tag">民族与国际</span><span class="tag">文化与性格</span>五个维度、共 <b>40 道题</b>，测出与你最相似的那一位。</p>
+      <p class="sub">收录 <b>40 位俄国革命人物</b>（布尔什维克 · 孟什维克 · 社会革命党 · 立宪民主党 · 白军 · 无政府主义者 · 文人），从<span class="tag">革命道路</span><span class="tag">经济路线</span><span class="tag">权力与手段</span><span class="tag">民族与国际</span><span class="tag">文化与性格</span>五个维度、共 <b>45 道题</b>，测出与你最相似的那一位。</p>
       <div style="margin-top:28px">
-        <button class="btn" onclick="startQuiz()">开始测试（40 题）</button>
+        <button class="btn" onclick="startQuiz()">开始测试（45 题）</button>
       </div>
     </div>
 
@@ -807,47 +804,45 @@ const questions = [
  },
  {
   "d": 0,
-  "q": "立宪民主与革命夺权，你倾向？",
+  "q": "个人恐怖与群众运动，你认同哪种斗争？",
   "options": [
    {
-    "t": "立宪民主，渐进宪政。",
+    "t": "个人恐怖，刺杀暴政。",
     "s": {
-     "milyukov": 3,
-     "guchkov": 2,
-     "rodzianko": 2
+     "savinkov": 3,
+     "spiridonova": 2
     },
     "exclude": [
      "lenin",
-     "trotsky",
-     "stalin",
-     "nicholas"
+     "martov",
+     "kropotkin"
     ]
    },
    {
-    "t": "革命夺权，无产阶级。",
+    "t": "群众运动，罢工起义。",
     "s": {
      "lenin": 2,
-     "trotsky": 2
+     "trotsky": 2,
+     "stalin": 1
     },
     "exclude": [
-     "milyukov",
-     "guchkov",
-     "rodzianko",
-     "nicholas"
+     "savinkov"
     ]
    },
    {
-    "t": "君主立宪，改良。",
+    "t": "非暴力，议会抗争。",
     "s": {
-     "stolypin": 1,
-     "witte": 2
+     "martov": 2,
+     "milyukov": 1,
+     "kerensky": 1
     }
    },
    {
-    "t": "绝对君主。",
+    "t": "都反对，维持秩序。",
     "s": {
      "nicholas": 2,
-     "rasputin": 1
+     "stolypin": 1,
+     "denikin": 1
     }
    }
   ]
@@ -894,45 +889,99 @@ const questions = [
  },
  {
   "d": 0,
-  "q": "个人恐怖与群众运动，你认同哪种斗争？",
+  "q": "对临时政府，支持还是推翻？",
   "options": [
    {
-    "t": "个人恐怖，刺杀暴政。",
+    "t": "支持临时政府，渐进民主。",
     "s": {
-     "savinkov": 3,
-     "spiridonova": 2
+     "kerensky": 3,
+     "milyukov": 2,
+     "guchkov": 2,
+     "rodzianko": 1
     },
     "exclude": [
      "lenin",
-     "martov",
-     "kropotkin"
+     "trotsky",
+     "stalin"
     ]
    },
    {
-    "t": "群众运动，罢工起义。",
+    "t": "推翻，一切权力归苏维埃。",
     "s": {
-     "lenin": 2,
+     "lenin": 3,
      "trotsky": 2,
-     "stalin": 1
+     "stalin": 2
     },
     "exclude": [
-     "savinkov"
+     "kerensky",
+     "milyukov",
+     "guchkov",
+     "rodzianko"
     ]
    },
    {
-    "t": "非暴力，议会抗争。",
+    "t": "观望，等时机。",
     "s": {
-     "martov": 2,
-     "milyukov": 1,
-     "kerensky": 1
+     "plekhanov": 1,
+     "martov": 1
     }
    },
    {
-    "t": "都反对，维持秩序。",
+    "t": "反对，恢复君主。",
     "s": {
      "nicholas": 2,
-     "stolypin": 1,
-     "denikin": 1
+     "denikin": 1,
+     "kolchak": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 0,
+  "q": "革命的目标，政治革命还是社会革命？",
+  "options": [
+   {
+    "t": "政治革命，推翻专制即可。",
+    "s": {
+     "milyukov": 2,
+     "guchkov": 2,
+     "kerensky": 1
+    },
+    "exclude": [
+     "lenin",
+     "trotsky",
+     "stalin",
+     "chernov"
+    ]
+   },
+   {
+    "t": "社会革命，彻底改造社会。",
+    "s": {
+     "lenin": 2,
+     "trotsky": 2,
+     "chernov": 2,
+     "spiridonova": 1
+    },
+    "exclude": [
+     "milyukov",
+     "guchkov",
+     "nicholas"
+    ]
+   },
+   {
+    "t": "两者都要，分步走。",
+    "s": {
+     "plekhanov": 1,
+     "martov": 1,
+     "bukharin": 1
+    }
+   },
+   {
+    "t": "不要革命。",
+    "s": {
+     "nicholas": 2,
+     "denikin": 1,
+     "witte": 1
     }
    }
   ]
@@ -1123,50 +1172,6 @@ const questions = [
  },
  {
   "d": 1,
-  "q": "粮食征收与市场自由，你认同？",
-  "options": [
-   {
-    "t": "余粮征集，保障城市。",
-    "s": {
-     "lenin": 2,
-     "trotsky": 1,
-     "stalin": 1
-    },
-    "exclude": [
-     "bukharin",
-     "makhno",
-     "witte"
-    ]
-   },
-   {
-    "t": "粮食市场，自由买卖。",
-    "s": {
-     "bukharin": 2,
-     "witte": 1
-    },
-    "exclude": [
-     "lenin",
-     "stalin"
-    ]
-   },
-   {
-    "t": "粮食税，折中。",
-    "s": {
-     "bukharin": 1,
-     "lenin": 1
-    }
-   },
-   {
-    "t": "自给自足，不征收。",
-    "s": {
-     "makhno": 2,
-     "kropotkin": 1
-    }
-   }
-  ]
- },
- {
-  "d": 1,
   "q": "对外资与技术，你的态度？",
   "options": [
    {
@@ -1208,53 +1213,6 @@ const questions = [
  },
  {
   "d": 1,
-  "q": "对资本主义，你的态度？",
-  "options": [
-   {
-    "t": "消灭资本主义。",
-    "s": {
-     "stalin": 2,
-     "trotsky": 2,
-     "dzerzhinsky": 1
-    },
-    "exclude": [
-     "witte",
-     "guchkov",
-     "milyukov",
-     "bukharin"
-    ]
-   },
-   {
-    "t": "利用资本主义发展。",
-    "s": {
-     "bukharin": 2,
-     "lenin": 1,
-     "witte": 1
-    },
-    "exclude": [
-     "stalin",
-     "trotsky"
-    ]
-   },
-   {
-    "t": "资本主义是正道。",
-    "s": {
-     "witte": 2,
-     "guchkov": 2,
-     "stolypin": 1
-    }
-   },
-   {
-    "t": "不要金钱，互助。",
-    "s": {
-     "kropotkin": 2,
-     "makhno": 1
-    }
-   }
-  ]
- },
- {
-  "d": 1,
   "q": "你心中的经济理想？",
   "options": [
    {
@@ -1284,6 +1242,96 @@ const questions = [
     "t": "农业村社自治。",
     "s": {
      "chernov": 1,
+     "makhno": 1,
+     "kropotkin": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 1,
+  "q": "余粮征集与农民市场，你认同？",
+  "options": [
+   {
+    "t": "余粮征集，强制征收。",
+    "s": {
+     "lenin": 2,
+     "trotsky": 1,
+     "stalin": 1
+    },
+    "exclude": [
+     "bukharin",
+     "makhno",
+     "chernov"
+    ]
+   },
+   {
+    "t": "粮食市场，农民自愿。",
+    "s": {
+     "bukharin": 2,
+     "chernov": 2,
+     "makhno": 1
+    },
+    "exclude": [
+     "lenin",
+     "stalin",
+     "trotsky"
+    ]
+   },
+   {
+    "t": "粮食税折中。",
+    "s": {
+     "bukharin": 1,
+     "lenin": 1
+    }
+   },
+   {
+    "t": "不干涉，自由。",
+    "s": {
+     "kropotkin": 2,
+     "makhno": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 1,
+  "q": "对资产阶级专家的利用，你的态度？",
+  "options": [
+   {
+    "t": "重用旧专家，向资本家学习。",
+    "s": {
+     "lenin": 2,
+     "witte": 2,
+     "bukharin": 1
+    },
+    "exclude": [
+     "stalin",
+     "dzerzhinsky"
+    ]
+   },
+   {
+    "t": "排斥专家，工农当家。",
+    "s": {
+     "stalin": 2,
+     "dzerzhinsky": 1
+    },
+    "exclude": [
+     "lenin",
+     "witte",
+     "bukharin"
+    ]
+   },
+   {
+    "t": "用但严加监督。",
+    "s": {
+     "trotsky": 1,
+     "lunacharsky": 1
+    }
+   },
+   {
+    "t": "不用专家。",
+    "s": {
      "makhno": 1,
      "kropotkin": 1
     }
@@ -1676,6 +1724,100 @@ const questions = [
   ]
  },
  {
+  "d": 2,
+  "q": "对「红色恐怖」，你的态度？",
+  "options": [
+   {
+    "t": "红色恐怖必要，镇压一切。",
+    "s": {
+     "dzerzhinsky": 3,
+     "stalin": 2,
+     "trotsky": 1
+    },
+    "exclude": [
+     "martov",
+     "kerensky",
+     "plekhanov",
+     "kropotkin"
+    ]
+   },
+   {
+    "t": "反对恐怖，讲法治。",
+    "s": {
+     "martov": 2,
+     "kerensky": 2,
+     "plekhanov": 2,
+     "kropotkin": 1
+    },
+    "exclude": [
+     "dzerzhinsky",
+     "stalin"
+    ]
+   },
+   {
+    "t": "有限恐怖，适可而止。",
+    "s": {
+     "lenin": 2,
+     "bukharin": 1
+    }
+   },
+   {
+    "t": "白色恐怖。",
+    "s": {
+     "denikin": 2,
+     "kolchak": 1,
+     "nicholas": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 2,
+  "q": "对沙俄旧军官（军事专家），你的态度？",
+  "options": [
+   {
+    "t": "重用旧军官，专业优先。",
+    "s": {
+     "trotsky": 2,
+     "lenin": 1,
+     "tukhachevsky": 1
+    },
+    "exclude": [
+     "stalin",
+     "dzerzhinsky"
+    ]
+   },
+   {
+    "t": "清洗旧军官，不信任。",
+    "s": {
+     "stalin": 2,
+     "dzerzhinsky": 1
+    },
+    "exclude": [
+     "trotsky",
+     "lenin",
+     "tukhachevsky"
+    ]
+   },
+   {
+    "t": "用但派政委监视。",
+    "s": {
+     "lenin": 1,
+     "trotsky": 1
+    }
+   },
+   {
+    "t": "白军立场，旧军官是主力。",
+    "s": {
+     "denikin": 2,
+     "kolchak": 2,
+     "wrangel": 1,
+     "kornilov": 1
+    }
+   }
+  ]
+ },
+ {
   "d": 3,
   "q": "一国社会主义与不断革命，你认同？",
   "options": [
@@ -1950,34 +2092,89 @@ const questions = [
  },
  {
   "d": 3,
-  "q": "对德国的态度？",
+  "q": "白军战略：先攻莫斯科，还是先与高尔察克会合？",
   "options": [
    {
-    "t": "对德复仇。",
+    "t": "先攻莫斯科，直捣黄龙。",
     "s": {
-     "nicholas": 1,
-     "denikin": 1,
-     "kolchak": 1
+     "denikin": 3,
+     "wrangel": 1
+    },
+    "exclude": [
+     "kolchak",
+     "kornilov",
+     "trotsky",
+     "tukhachevsky"
+    ]
+   },
+   {
+    "t": "先与高尔察克会合，合兵一处。",
+    "s": {
+     "kolchak": 3,
+     "wrangel": 1
+    },
+    "exclude": [
+     "denikin",
+     "trotsky",
+     "budyonny"
+    ]
+   },
+   {
+    "t": "红军立场，各个击破。",
+    "s": {
+     "trotsky": 2,
+     "tukhachevsky": 2,
+     "budyonny": 1
     }
    },
    {
-    "t": "对德和谈妥协。",
+    "t": "不参与内战。",
     "s": {
-     "lenin": 2,
-     "stalin": 1
+     "kerensky": 1,
+     "plekhanov": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 3,
+  "q": "是否与波兰合作，共同反苏？",
+  "options": [
+   {
+    "t": "与波兰合作，共同反苏。",
+    "s": {
+     "denikin": 2,
+     "wrangel": 2
+    },
+    "exclude": [
+     "kolchak",
+     "nicholas",
+     "trotsky",
+     "tukhachevsky"
+    ]
+   },
+   {
+    "t": "拒绝波兰，俄国领土寸土不让。",
+    "s": {
+     "kolchak": 2,
+     "nicholas": 1
+    },
+    "exclude": [
+     "denikin",
+     "wrangel"
+    ]
+   },
+   {
+    "t": "红军立场，击退波兰。",
+    "s": {
+     "tukhachevsky": 2,
+     "budyonny": 2,
+     "trotsky": 1
     }
    },
    {
-    "t": "世界革命不分国界。",
+    "t": "中立。",
     "s": {
-     "trotsky": 1,
-     "zinoviev": 1
-    }
-   },
-   {
-    "t": "反战和平。",
-    "s": {
-     "kropotkin": 1,
      "kerensky": 1
     }
    }
@@ -1985,35 +2182,50 @@ const questions = [
  },
  {
   "d": 3,
-  "q": "泛斯拉夫主义与无产阶级国际主义，你认同？",
+  "q": "面对黑军（马赫诺无政府起义军），你的态度？",
   "options": [
    {
-    "t": "泛斯拉夫，俄罗斯优先。",
-    "s": {
-     "nicholas": 2,
-     "denikin": 1,
-     "kolchak": 1
-    }
-   },
-   {
-    "t": "无产阶级国际主义。",
+    "t": "联合黑军，共同对敌。",
     "s": {
      "lenin": 1,
-     "trotsky": 1,
-     "zinoviev": 1
-    }
+     "trotsky": 1
+    },
+    "exclude": [
+     "stalin",
+     "dzerzhinsky",
+     "denikin",
+     "kolchak"
+    ]
    },
    {
-    "t": "民族平等。",
+    "t": "消灭黑军，无政府是敌人。",
     "s": {
-     "spiridonova": 1,
-     "kropotkin": 1
-    }
+     "stalin": 2,
+     "dzerzhinsky": 2,
+     "denikin": 1,
+     "kolchak": 1
+    },
+    "exclude": [
+     "makhno",
+     "kropotkin"
+    ]
    },
    {
-    "t": "不关心。",
+    "t": "黑军立场，独立游击。",
     "s": {
-     "witte": 1
+     "makhno": 3,
+     "kropotkin": 2
+    },
+    "exclude": [
+     "stalin",
+     "dzerzhinsky",
+     "denikin"
+    ]
+   },
+   {
+    "t": "不参与。",
+    "s": {
+     "kerensky": 1
     }
    }
   ]
@@ -2305,40 +2517,85 @@ const questions = [
  },
  {
   "d": 4,
-  "q": "你希望被后世记住为？",
+  "q": "文艺为政治服务，还是文艺自由？",
   "options": [
    {
-    "t": "革命领袖。",
+    "t": "文艺为革命服务。",
     "s": {
-     "lenin": 3,
-     "trotsky": 2,
-     "stalin": 1
+     "mayakovsky": 2,
+     "lenin": 1
+    },
+    "exclude": [
+     "blok",
+     "yesenin",
+     "lunacharsky"
+    ]
+   },
+   {
+    "t": "文艺自由，百花齐放。",
+    "s": {
+     "lunacharsky": 3,
+     "blok": 2,
+     "gorky": 1
+    },
+    "exclude": [
+     "mayakovsky",
+     "lenin"
+    ]
+   },
+   {
+    "t": "为艺术而艺术。",
+    "s": {
+     "yesenin": 2,
+     "blok": 1
     }
    },
    {
-    "t": "改革者。",
+    "t": "不关心。",
     "s": {
-     "stolypin": 2,
-     "witte": 2,
-     "bukharin": 1
+     "witte": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 4,
+  "q": "骑兵冲锋与现代化战争，你认同哪种？",
+  "options": [
+   {
+    "t": "骑兵冲锋，传统战法。",
+    "s": {
+     "budyonny": 3,
+     "voroshilov": 2
+    },
+    "exclude": [
+     "tukhachevsky",
+     "trotsky"
+    ]
+   },
+   {
+    "t": "现代化战争，坦克空军。",
+    "s": {
+     "tukhachevsky": 3,
+     "trotsky": 2
+    },
+    "exclude": [
+     "budyonny",
+     "voroshilov"
+    ]
+   },
+   {
+    "t": "游击战。",
+    "s": {
+     "makhno": 2,
+     "savinkov": 1
     }
    },
    {
-    "t": "自由斗士。",
+    "t": "不关心军事。",
     "s": {
-     "kerensky": 2,
-     "milyukov": 1,
-     "kropotkin": 2,
-     "makhno": 1
-    }
-   },
-   {
-    "t": "正统捍卫者。",
-    "s": {
-     "nicholas": 2,
-     "denikin": 1,
-     "kolchak": 1,
-     "wrangel": 1
+     "gorky": 1,
+     "blok": 1
     }
    }
   ]
@@ -2430,16 +2687,15 @@ function showResult() {
   dimsBox.innerHTML = '';
   const dimParts = [];
   DIMS.forEach((name, d) => {
-    let dimTopId = null, dimTopScore = 0;
-    for (const id in dimScores[d]) { if (!excluded.has(id) && dimScores[d][id] > dimTopScore) { dimTopScore = dimScores[d][id]; dimTopId = id; } }
-    const dimTopFig = dimTopId ? figures[dimTopId] : null;
     const dimScore = dimScores[d][top.id] || 0;
-    const pct = dimTopScore ? Math.round((dimScore / dimTopScore) * 100) : 0;
+    let dimMax = 0;
+    for (const id in dimScores[d]) { if (!excluded.has(id) && dimScores[d][id] > dimMax) dimMax = dimScores[d][id]; }
+    const pct = dimMax ? Math.round((dimScore / dimMax) * 100) : 0;
+    dimsBox.innerHTML += `<div class="dim-item"><div class="dim-name">${name}</div><div class="dim-bar"><div class="dim-fill" style="width:${pct}%"></div></div><div class="dim-pct">${pct}%</div></div>`;
     const level = pct >= 80 ? '高度契合' : (pct >= 50 ? '较为契合' : '有所差异');
-    dimsBox.innerHTML += `<div class="dim-item"><div class="dim-name">${name}</div><div class="dim-fig"><span class="dim-avatar">${dimTopFig ? dimTopFig.char : '—'}</span><span class="dim-fig-name">${dimTopFig ? dimTopFig.name : '无'}</span></div><div class="dim-bar"><div class="dim-fill" style="width:${pct}%"></div></div><div class="dim-pct">${pct}%</div></div>`;
-    dimParts.push(`${name}上最像${dimTopFig ? dimTopFig.name : '无'}，你与「${f.name}」${level}（${pct}%）`);
+    dimParts.push(`${name}上${level}（${pct}%）`);
   });
-  document.getElementById('rDimsText').textContent = '五维解读——' + dimParts.join('；') + '。';
+  document.getElementById('rDimsText').textContent = '你与他——' + dimParts.join('，') + '。';
 
   const rankBox = document.getElementById('rRank');
   rankBox.innerHTML = '';
