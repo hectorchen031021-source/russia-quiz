@@ -2660,12 +2660,18 @@ function showResult() {
     for (const id in s) dimScores[d][id] = (dimScores[d][id] || 0) + s[id];
     if (opt.exclude) opt.exclude.forEach(id => excluded.add(id));
   });
-  const total = {};
-  for (const dim of dimScores) { for (const id in dim) total[id] = (total[id] || 0) + dim[id]; }
-  const ranked = Object.keys(total).filter(id => !excluded.has(id)).map(id => ({ id, score: total[id] })).sort((a,b) => b.score - a.score);
+  const dimMax = [0,0,0,0,0];
+  for (let d=0; d<5; d++) { for (const id in dimScores[d]) { if (!excluded.has(id) && dimScores[d][id] > dimMax[d]) dimMax[d] = dimScores[d][id]; } }
+  const ids = new Set();
+  for (const dim of dimScores) { for (const id in dim) { if (!excluded.has(id)) ids.add(id); } }
+  const ranked = [...ids].map(id => {
+    let prod = 1;
+    for (let d=0; d<5; d++) { const pct = dimMax[d] ? (dimScores[d][id] || 0) / dimMax[d] : 0; prod *= (pct + 0.15); }
+    return { id, balance: Math.pow(prod, 0.2) - 0.15 };
+  }).sort((a,b) => b.balance - a.balance);
 
   const top = ranked[0];
-  const maxScore = top.score;
+  const maxScore = top.balance;
   const f = figures[top.id];
 
   document.getElementById('quiz').classList.add('hidden');
@@ -2680,7 +2686,7 @@ function showResult() {
   document.getElementById('rQuoteSrc').textContent = '—— ' + f.name;
   document.getElementById('rIntro').textContent = f.intro;
   document.getElementById('rDesc').textContent = f.desc;
-  document.getElementById('rPct').textContent = '100%';
+  document.getElementById('rPct').textContent = Math.round(top.balance * 100) + '%';
   document.getElementById('rRegion').textContent = f.nation + ' · ' + f.title;
 
   const dimsBox = document.getElementById('rDims');
@@ -2700,7 +2706,7 @@ function showResult() {
   const rankBox = document.getElementById('rRank');
   rankBox.innerHTML = '';
   ranked.slice(0, 6).forEach((r, i) => {
-    const pct = Math.round((r.score / maxScore) * 100);
+    const pct = Math.round((r.balance / maxScore) * 100);
     const rf = figures[r.id];
     rankBox.innerHTML += `<div class="rank-item"><div class="name">${i===0?'★ ':''}${rf.name}</div><div class="rank-bar"><div class="rank-fill" style="width:${pct}%"></div></div><div class="pct">${pct}%</div></div>`;
   });
