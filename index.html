@@ -1,0 +1,2456 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>测测你是俄国革命的谁？</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400..700&family=Jost:wght@400..600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #efe3d0; --surface: #f7efe1; --ink: #6e1b1b; --muted: #9a5a45;
+    --accent: #a3251d; --accent-ink: #f7efe1;
+    --line: rgba(110,27,27,.16); --line-strong: rgba(110,27,27,.4);
+    --font-display: "EB Garamond", "Songti SC", "STSong", "SimSun", Georgia, serif;
+    --font-text: "Jost", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: var(--font-text); min-height: 100vh; background: var(--bg); color: var(--ink);
+    display: flex; align-items: center; justify-content: center; padding: 28px 20px;
+  }
+  .app { width: 100%; max-width: 660px; background: var(--surface); border-radius: 24px; box-shadow: 0 1px 2px rgba(110,27,27,.06), 0 24px 60px rgba(110,27,27,.14); overflow: hidden; }
+  .stage { padding: 44px 44px 40px; }
+  .progress-wrap { height: 4px; background: var(--line); }
+  .progress-bar { height: 100%; background: var(--accent); width: 0%; transition: width .4s cubic-bezier(.22,.61,.36,1); }
+  .kicker { font-size: 12px; letter-spacing: .28em; color: var(--accent); text-transform: uppercase; font-weight: 600; margin-bottom: 14px; }
+  h1, .result-name { font-family: var(--font-display); font-weight: 500; color: var(--ink); letter-spacing: -.01em; line-height: 1.18; }
+  h1 { font-size: 40px; margin-bottom: 16px; }
+  .sub { color: var(--muted); font-size: 15px; line-height: 1.8; max-width: 40em; }
+  .sub b { color: var(--ink); font-weight: 600; }
+  .tag { display: inline-block; background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 999px; padding: 3px 12px; font-size: 12px; margin: 2px 4px 2px 0; letter-spacing: .02em; }
+  .q-num { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+  .dim-tag { float: right; font-size: 12px; color: var(--accent-ink); background: var(--accent); border-radius: 999px; padding: 2px 11px; letter-spacing: .04em; }
+  .question { font-family: var(--font-display); font-weight: 500; font-size: 26px; line-height: 1.35; margin-bottom: 28px; color: var(--ink); letter-spacing: -.005em; }
+  .options { display: flex; flex-direction: column; gap: 12px; }
+  .option { display: flex; align-items: center; gap: 16px; border: 1px solid var(--line); border-radius: 16px; padding: 17px 20px; cursor: pointer; transition: border-color .16s ease, transform .16s ease, box-shadow .16s ease; background: #fff; text-align: left; font-size: 15.5px; line-height: 1.55; color: var(--ink); }
+  .option:hover { border-color: var(--line-strong); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(110,27,27,.08); }
+  .option:active { transform: translateY(0); }
+  .option .letter { flex: none; width: 32px; height: 32px; border-radius: 50%; background: var(--bg); color: var(--accent); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; transition: background .16s ease, color .16s ease; }
+  .option:hover .letter { border-color: var(--accent); }
+  .option.selected { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .option.selected .letter { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .btn { width: 100%; padding: 16px; border: none; border-radius: 14px; background: var(--accent); color: var(--accent-ink); font-size: 16px; font-weight: 600; cursor: pointer; letter-spacing: .06em; transition: transform .14s ease, box-shadow .14s ease, opacity .18s ease; }
+  .btn:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(110,27,27,.22); }
+  .btn:active { transform: translateY(0); }
+  .btn:disabled { opacity: .35; cursor: not-allowed; transform: none; box-shadow: none; }
+  .footer-nav { margin-top: 24px; display: flex; gap: 12px; }
+  .ghost { flex: 1; padding: 14px; border: 1px solid var(--line); border-radius: 14px; background: transparent; color: var(--muted); font-size: 14px; cursor: pointer; transition: border-color .16s ease, color .16s ease; }
+  .ghost:hover { border-color: var(--accent); color: var(--ink); }
+  .result-head { text-align: center; }
+  .avatar { position: relative; overflow: hidden; width: 124px; height: 124px; border-radius: 50%; background: var(--bg); color: var(--accent); display: flex; align-items: center; justify-content: center; margin: 0 auto 22px; box-shadow: 0 12px 32px rgba(110,27,27,.18); }
+  .avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 20%; display: none; }
+  .avatar .char-fallback { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 52px; font-weight: 500; }
+  .match-pct { color: var(--accent); font-weight: 700; font-size: 20px; }
+  .result-name { font-size: 40px; margin: 8px 0 4px; }
+  .result-title { color: var(--muted); font-size: 15px; }
+  .region-label { display: inline-block; background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 999px; padding: 3px 13px; font-size: 12px; margin-top: 12px; }
+  .quote { text-align: center; margin-top: 28px; }
+  .quote-text { font-family: var(--font-display); font-size: 24px; font-weight: 500; line-height: 1.5; color: var(--ink); letter-spacing: -.005em; }
+  .quote-text::before { content: "「"; color: var(--accent); }
+  .quote-text::after { content: "」"; color: var(--accent); }
+  .quote-src { color: var(--muted); font-size: 13px; margin-top: 10px; }
+  .intro { margin-top: 22px; text-align: left; background: var(--bg); border-left: 3px solid var(--accent); border-radius: 0 12px 12px 0; padding: 16px 18px; font-size: 14px; line-height: 1.75; color: var(--ink); }
+  .desc { margin-top: 16px; text-align: left; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; font-size: 15px; line-height: 1.8; color: var(--ink); }
+  .rank { margin-top: 26px; text-align: left; }
+  .rank h3 { font-size: 13px; color: var(--muted); margin-bottom: 14px; letter-spacing: .1em; font-weight: 600; text-transform: uppercase; }
+  .rank-item { display: flex; align-items: center; gap: 12px; margin-bottom: 11px; }
+  .rank-item .name { width: 108px; font-weight: 600; font-size: 14px; }
+  .rank-bar { flex: 1; height: 10px; background: var(--bg); border-radius: 999px; overflow: hidden; }
+  .rank-fill { height: 100%; background: var(--accent); border-radius: 999px; transition: width .6s cubic-bezier(.22,.61,.36,1); }
+  .rank-item .pct { width: 46px; text-align: right; font-size: 13px; color: var(--muted); }
+  .dim-item { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .dim-item .dim-name { width: 96px; font-weight: 600; font-size: 13px; color: var(--ink); flex: none; }
+  .dim-bar { flex: 1; height: 8px; background: var(--bg); border-radius: 999px; overflow: hidden; }
+  .dim-fill { height: 100%; background: var(--accent); border-radius: 999px; transition: width .6s cubic-bezier(.22,.61,.36,1); }
+  .dim-item .dim-pct { width: 40px; text-align: right; font-size: 12px; color: var(--muted); flex: none; }
+  .dims-text { margin-top: 14px; font-size: 14px; line-height: 1.7; color: var(--ink); text-align: left; }
+  .hidden { display: none !important; }
+  .fade-in { animation: fadeIn .45s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: none;} }
+  @media (max-width: 560px) {
+    body { padding: 12px; align-items: flex-start; }
+    .app { border-radius: 18px; }
+    .stage { padding: 28px 22px 26px; }
+    h1 { font-size: 32px; }
+    .question { font-size: 22px; }
+    .result-name { font-size: 32px; }
+    .quote-text { font-size: 21px; }
+  }
+</style>
+</head>
+<body>
+  <div class="app">
+    <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+
+    <div class="stage" id="intro">
+      <div class="kicker">历史人格测试</div>
+      <h1>测测你是俄国革命的谁？</h1>
+      <p class="sub">收录 <b>40 位俄国革命人物</b>（布尔什维克 · 孟什维克 · 社会革命党 · 立宪民主党 · 白军 · 无政府主义者 · 文人），从<span class="tag">革命道路</span><span class="tag">经济路线</span><span class="tag">权力与手段</span><span class="tag">民族与国际</span><span class="tag">文化与性格</span>五个维度、共 <b>40 道题</b>，测出与你最相似的那一位。</p>
+      <div style="margin-top:28px">
+        <button class="btn" onclick="startQuiz()">开始测试（40 题）</button>
+      </div>
+    </div>
+
+    <div class="stage hidden" id="quiz">
+      <div class="q-num"><span id="qNumText"></span><span class="dim-tag" id="dimTag"></span></div>
+      <div class="question" id="qText"></div>
+      <div class="options" id="qOptions"></div>
+      <div class="footer-nav">
+        <button class="ghost hidden" id="prevBtn" onclick="prevQuestion()">上一题</button>
+        <button class="ghost" id="nextBtn" onclick="nextQuestion()" disabled>下一题</button>
+      </div>
+    </div>
+
+    <div class="stage hidden" id="result">
+      <div class="result-head fade-in">
+        <div class="kicker">测试结果</div>
+        <div class="avatar" id="rAvatar"><span class="char-fallback" id="rChar"></span><img id="rImg" alt="" referrerpolicy="no-referrer"></div>
+        <div>你与 <span class="match-pct" id="rPct"></span> 相似</div>
+        <div class="result-name" id="rName"></div>
+        <div class="result-title" id="rTitle"></div>
+        <div><span class="region-label" id="rRegion"></span></div>
+      </div>
+      <div class="quote fade-in"><div class="quote-text" id="rQuote"></div><div class="quote-src" id="rQuoteSrc"></div></div>
+      <div class="intro fade-in" id="rIntro"></div>
+      <div class="desc fade-in" id="rDesc"></div>
+      <div class="rank fade-in">
+        <h3>五维画像</h3>
+        <div id="rDims"></div>
+        <div class="dims-text" id="rDimsText"></div>
+      </div>
+      <div class="rank fade-in">
+        <h3>完整排名（前 6 位）</h3>
+        <div id="rRank"></div>
+      </div>
+      <div style="margin-top:26px; display:flex; gap:12px">
+        <button class="btn" onclick="restart()">重新测试</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+const figures = {
+ "lenin": {
+  "name": "列宁",
+  "char": "列",
+  "nation": "俄国",
+  "title": "布尔什维克领袖",
+  "desc": "你与列宁最像——列宁（1870—1924），布尔什维克领袖，领导十月革命，苏联缔造者。",
+  "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c0/Lenin_in_1920_%28cropped%29.jpg/330px-Lenin_in_1920_%28cropped%29.jpg",
+  "quote": "和平、土地、面包",
+  "intro": "列宁（1870—1924），布尔什维克领袖，领导十月革命，苏联缔造者。"
+ },
+ "trotsky": {
+  "name": "托洛茨基",
+  "char": "托",
+  "nation": "俄国",
+  "title": "红军之父",
+  "desc": "你与托洛茨基最像——托洛茨基（1879—1940），红军创建者，不断革命论者，被斯大林流放暗杀。",
+  "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5f/Leon_Trotsky_1918_%283x4_rotated_cropped%29.jpg/330px-Leon_Trotsky_1918_%283x4_rotated_cropped%29.jpg",
+  "quote": "不断革命",
+  "intro": "托洛茨基（1879—1940），红军创建者，不断革命论者，被斯大林流放暗杀。"
+ },
+ "stalin": {
+  "name": "斯大林",
+  "char": "斯",
+  "nation": "俄国",
+  "title": "最高领袖",
+  "desc": "你与斯大林最像——斯大林（1878—1953），苏联最高领导人，集权者，大清洗主导者。",
+  "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f7/Joseph_Stalin_official_portrait.jpg/330px-Joseph_Stalin_official_portrait.jpg",
+  "quote": "一国建成社会主义",
+  "intro": "斯大林（1878—1953），苏联最高领导人，集权者，大清洗主导者。"
+ },
+ "bukharin": {
+  "name": "布哈林",
+  "char": "布",
+  "nation": "俄国",
+  "title": "理论家",
+  "desc": "你与布哈林最像——布哈林（1888—1938），布尔什维克理论家，主张渐进发展，被处决。",
+  "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/38/Bucharin.bra.jpg/330px-Bucharin.bra.jpg",
+  "quote": "新经济政策",
+  "intro": "布哈林（1888—1938），布尔什维克理论家，主张渐进发展，被处决。"
+ },
+ "kamenev": {
+  "name": "加米涅夫",
+  "char": "加",
+  "nation": "俄国",
+  "title": "温和派",
+  "desc": "你与加米涅夫最像——加米涅夫（1883—1936），布尔什维克温和派，反对武装起义，被处决。",
+  "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/07/Lev_Kamenev_1920s_%28cropped%29%28b%29.jpg/330px-Lev_Kamenev_1920s_%28cropped%29%28b%29.jpg",
+  "quote": "反对十月起义",
+  "intro": "加米涅夫（1883—1936），布尔什维克温和派，反对武装起义，被处决。"
+ },
+ "zinoviev": {
+  "name": "季诺维也夫",
+  "char": "季",
+  "nation": "俄国",
+  "title": "共产国际主席",
+  "desc": "你与季诺维也夫最像——季诺维也夫（1883—1936），共产国际主席，反复无常，被处决。",
+  "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6b/Grigory_Zinoviev_02.jpg/330px-Grigory_Zinoviev_02.jpg",
+  "quote": "世界革命",
+  "intro": "季诺维也夫（1883—1936），共产国际主席，反复无常，被处决。"
+ },
+ "dzerzhinsky": {
+  "name": "捷尔任斯基",
+  "char": "捷",
+  "nation": "俄国",
+  "title": "契卡创始人",
+  "desc": "你与捷尔任斯基最像——捷尔任斯基（1877—1926），契卡创始人，以铁腕镇压反革命。",
+  "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/89/RIAN_archive_6464_Dzerzhinsky.jpg/330px-RIAN_archive_6464_Dzerzhinsky.jpg",
+  "quote": "铁腕",
+  "intro": "捷尔任斯基（1877—1926），契卡创始人，以铁腕镇压反革命。"
+ },
+ "sverdlov": {
+  "name": "斯维尔德洛夫",
+  "char": "斯",
+  "nation": "俄国",
+  "title": "组织天才",
+  "desc": "你与斯维尔德洛夫最像——斯维尔德洛夫（1885—1919），布尔什维克组织者，早逝。",
+  "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a7/%D0%A1%D0%B2%D0%B5%D1%80%D0%B4%D0%BB%D0%BE%D0%B2_%D0%AF%D0%BA%D0%BE%D0%B2_%D0%9C%D0%B8%D1%85%D0%B0%D0%B9%D0%BB%D0%BE%D0%B2%D0%B8%D1%87.jpg/330px-%D0%A1%D0%B2%D0%B5%D1%80%D0%B4%D0%BB%D0%BE%D0%B2_%D0%AF%D0%BA%D0%BE%D0%B2_%D0%9C%D0%B8%D1%85%D0%B0%D0%B9%D0%BB%D0%BE%D0%B2%D0%B8%D1%87.jpg",
+  "quote": "组织就是一切",
+  "intro": "斯维尔德洛夫（1885—1919），布尔什维克组织者，早逝。"
+ },
+ "kollontai": {
+  "name": "柯伦泰",
+  "char": "柯",
+  "nation": "俄国",
+  "title": "女革命家",
+  "desc": "你与柯伦泰最像——柯伦泰（1872—1952），女革命家，倡导妇女解放与自由恋爱。",
+  "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9a/Collonthai.jpg/330px-Collonthai.jpg",
+  "quote": "妇女解放与性自由",
+  "intro": "柯伦泰（1872—1952），女革命家，倡导妇女解放与自由恋爱。"
+ },
+ "krupskaya": {
+  "name": "克鲁普斯卡娅",
+  "char": "克",
+  "nation": "俄国",
+  "title": "教育家",
+  "desc": "你与克鲁普斯卡娅最像——克鲁普斯卡娅（1869—1939），列宁夫人，教育家。",
+  "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6a/Nadezhda_K_Krupskaya_%283x4_cropped%29.jpg/330px-Nadezhda_K_Krupskaya_%283x4_cropped%29.jpg",
+  "quote": "教育人民",
+  "intro": "克鲁普斯卡娅（1869—1939），列宁夫人，教育家。"
+ },
+ "lunacharsky": {
+  "name": "卢那察尔斯基",
+  "char": "卢",
+  "nation": "俄国",
+  "title": "文艺人民委员",
+  "desc": "你与卢那察尔斯基最像——卢那察尔斯基（1875—1933），教育人民委员，对文艺宽容。",
+  "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/86/Anatoly_Lunacharsky.jpg/330px-Anatoly_Lunacharsky.jpg",
+  "quote": "宽容文艺",
+  "intro": "卢那察尔斯基（1875—1933），教育人民委员，对文艺宽容。"
+ },
+ "budyonny": {
+  "name": "布琼尼",
+  "char": "布",
+  "nation": "俄国",
+  "title": "骑兵元帅",
+  "desc": "你与布琼尼最像——布琼尼（1883—1973），骑兵元帅，红军将领。",
+  "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/51/%D0%9C%D0%B0%D1%80%D1%88%D0%B0%D0%BB_%D0%A1%D0%BE%D0%B2%D0%B5%D1%82%D1%81%D0%BA%D0%BE%D0%B3%D0%BE_%D0%A1%D0%BE%D1%8E%D0%B7%D0%B0_%D0%A1%D0%B5%D0%BC%D1%91%D0%BD_%D0%9C%D0%B8%D1%85%D0%B0%D0%B9%D0%BB%D0%BE%D0%B2%D0%B8%D1%87_%D0%91%D1%83%D0%B4%D1%91%D0%BD%D0%BD%D1%8B%D0%B9.jpg/330px-%D0%9C%D0%B0%D1%80%D1%88%D0%B0%D0%BB_%D0%A1%D0%BE%D0%B2%D0%B5%D1%82%D1%81%D0%BA%D0%BE%D0%B3%D0%BE_%D0%A1%D0%BE%D1%8E%D0%B7%D0%B0_%D0%A1%D0%B5%D0%BC%D1%91%D0%BD_%D0%9C%D0%B8%D1%85%D0%B0%D0%B9%D0%BB%D0%BE%D0%B2%D0%B8%D1%87_%D0%91%D1%83%D0%B4%D1%91%D0%BD%D0%BD%D1%8B%D0%B9.jpg",
+  "quote": "骑兵冲锋",
+  "intro": "布琼尼（1883—1973），骑兵元帅，红军将领。"
+ },
+ "voroshilov": {
+  "name": "伏罗希洛夫",
+  "char": "伏",
+  "nation": "俄国",
+  "title": "元帅",
+  "desc": "你与伏罗希洛夫最像——伏罗希洛夫（1881—1969），元帅，斯大林亲信。",
+  "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a6/Kliment_Voroshilov.jpg/330px-Kliment_Voroshilov.jpg",
+  "quote": "忠诚",
+  "intro": "伏罗希洛夫（1881—1969），元帅，斯大林亲信。"
+ },
+ "tukhachevsky": {
+  "name": "图哈切夫斯基",
+  "char": "图",
+  "nation": "俄国",
+  "title": "红军元帅",
+  "desc": "你与图哈切夫斯基最像——图哈切夫斯基（1893—1937），红军元帅，军事改革，被处决。",
+  "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/66/Mikhail_Tukhachevsky.jpg/330px-Mikhail_Tukhachevsky.jpg",
+  "quote": "现代化战争",
+  "intro": "图哈切夫斯基（1893—1937），红军元帅，军事改革，被处决。"
+ },
+ "kirov": {
+  "name": "基洛夫",
+  "char": "基",
+  "nation": "俄国",
+  "title": "列宁格勒书记",
+  "desc": "你与基洛夫最像——基洛夫（1886—1934），列宁格勒书记，被刺，大清洗导火索。",
+  "img": "https://upload.wikimedia.org/wikipedia/commons/7/73/Sergey_Kirov_portrait_%28Cropped%29.jpg",
+  "quote": "（被刺杀）",
+  "intro": "基洛夫（1886—1934），列宁格勒书记，被刺，大清洗导火索。"
+ },
+ "mikoyan": {
+  "name": "米高扬",
+  "char": "米",
+  "nation": "俄国",
+  "title": "官僚",
+  "desc": "你与米高扬最像——米高扬（1895—1978），斯大林时代官僚，历仕多朝不倒。",
+  "img": "https://upload.wikimedia.org/wikipedia/commons/5/53/%D0%90%D0%BD%D0%B0%D1%81%D1%82%D0%B0%D1%81_%D0%98%D0%B2%D0%B0%D0%BD%D0%BE%D0%B2%D0%B8%D1%87_%D0%9C%D0%B8%D0%BA%D0%BE%D1%8F%D0%BD.jpg",
+  "quote": "历仕多朝不倒",
+  "intro": "米高扬（1895—1978），斯大林时代官僚，历仕多朝不倒。"
+ },
+ "plekhanov": {
+  "name": "普列汉诺夫",
+  "char": "普",
+  "nation": "俄国",
+  "title": "马克思主义之父",
+  "desc": "你与普列汉诺夫最像——普列汉诺夫（1856—1918），俄国马克思主义之父，后转向孟什维克。",
+  "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/47/Georgi_Plekhanov.jpg/330px-Georgi_Plekhanov.jpg",
+  "quote": "马克思主义",
+  "intro": "普列汉诺夫（1856—1918），俄国马克思主义之父，后转向孟什维克。"
+ },
+ "martov": {
+  "name": "马尔托夫",
+  "char": "马",
+  "nation": "俄国",
+  "title": "孟什维克领袖",
+  "desc": "你与马尔托夫最像——马尔托夫（1873—1923），孟什维克领袖，反对集权。",
+  "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bd/Julius_Martov_1910_Edit.jpg/330px-Julius_Martov_1910_Edit.jpg",
+  "quote": "民主社会主义",
+  "intro": "马尔托夫（1873—1923），孟什维克领袖，反对集权。"
+ },
+ "axelrod": {
+  "name": "阿克雪里罗德",
+  "char": "阿",
+  "nation": "俄国",
+  "title": "孟什维克理论家",
+  "desc": "你与阿克雪里罗德最像——阿克雪里罗德（1850—1928），孟什维克理论家。",
+  "img": "",
+  "quote": "（理论家）",
+  "intro": "阿克雪里罗德（1850—1928），孟什维克理论家。"
+ },
+ "kerensky": {
+  "name": "克伦斯基",
+  "char": "克",
+  "nation": "俄国",
+  "title": "临时政府总理",
+  "desc": "你与克伦斯基最像——克伦斯基（1881—1970），临时政府总理，社会革命党人。",
+  "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c1/Karenskiy_AF_1917.jpg/330px-Karenskiy_AF_1917.jpg",
+  "quote": "民主与战争",
+  "intro": "克伦斯基（1881—1970），临时政府总理，社会革命党人。"
+ },
+ "chernov": {
+  "name": "切尔诺夫",
+  "char": "切",
+  "nation": "俄国",
+  "title": "社革领袖",
+  "desc": "你与切尔诺夫最像——切尔诺夫（1873—1952），社会革命党领袖，土地改革者。",
+  "img": "https://upload.wikimedia.org/wikipedia/commons/1/14/Chernov.jpg",
+  "quote": "土地归农民",
+  "intro": "切尔诺夫（1873—1952），社会革命党领袖，土地改革者。"
+ },
+ "spiridonova": {
+  "name": "斯皮里多诺娃",
+  "char": "斯",
+  "nation": "俄国",
+  "title": "左派社革",
+  "desc": "你与斯皮里多诺娃最像——斯皮里多诺娃（1884—1941），左派社会革命党女革命家。",
+  "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a1/MarijaSpiridonova.jpg/330px-MarijaSpiridonova.jpg",
+  "quote": "（女革命家）",
+  "intro": "斯皮里多诺娃（1884—1941），左派社会革命党女革命家。"
+ },
+ "savinkov": {
+  "name": "萨文科夫",
+  "char": "萨",
+  "nation": "俄国",
+  "title": "恐怖主义者",
+  "desc": "你与萨文科夫最像——萨文科夫（1879—1925），社会革命党战斗组织，恐怖主义者。",
+  "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/84/SavinkovViceministroDeDefensa1917.jpg/330px-SavinkovViceministroDeDefensa1917.jpg",
+  "quote": "以恐怖对抗暴政",
+  "intro": "萨文科夫（1879—1925），社会革命党战斗组织，恐怖主义者。"
+ },
+ "milyukov": {
+  "name": "米留可夫",
+  "char": "米",
+  "nation": "俄国",
+  "title": "立宪民主党领袖",
+  "desc": "你与米留可夫最像——米留可夫（1859—1943），立宪民主党领袖，自由派。",
+  "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/11/Pavel_Milyukov_2.jpg/330px-Pavel_Milyukov_2.jpg",
+  "quote": "立宪民主",
+  "intro": "米留可夫（1859—1943），立宪民主党领袖，自由派。"
+ },
+ "guchkov": {
+  "name": "古契科夫",
+  "char": "古",
+  "nation": "俄国",
+  "title": "十月党人",
+  "desc": "你与古契科夫最像——古契科夫（1862—1936），十月党人，实业家。",
+  "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0c/Alexandre_Goutchkow.jpg/330px-Alexandre_Goutchkow.jpg",
+  "quote": "（实业家）",
+  "intro": "古契科夫（1862—1936），十月党人，实业家。"
+ },
+ "rodzianko": {
+  "name": "罗将科",
+  "char": "罗",
+  "nation": "俄国",
+  "title": "杜马主席",
+  "desc": "你与罗将科最像——罗将科（1859—1924），国家杜马主席。",
+  "img": "",
+  "quote": "（杜马）",
+  "intro": "罗将科（1859—1924），国家杜马主席。"
+ },
+ "nicholas": {
+  "name": "尼古拉二世",
+  "char": "尼",
+  "nation": "俄国",
+  "title": "末代沙皇",
+  "desc": "你与尼古拉二世最像——尼古拉二世（1868—1918），末代沙皇，被处决。",
+  "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b6/Nicholas_II%2C_Russian_Emperor_%28cropped_2%29.jpg/330px-Nicholas_II%2C_Russian_Emperor_%28cropped_2%29.jpg",
+  "quote": "君权神授",
+  "intro": "尼古拉二世（1868—1918），末代沙皇，被处决。"
+ },
+ "rasputin": {
+  "name": "拉斯普京",
+  "char": "拉",
+  "nation": "俄国",
+  "title": "妖僧",
+  "desc": "你与拉斯普京最像——拉斯普京（1869—1916），妖僧，深得皇室信任，被刺杀。",
+  "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/71/Rasputin_PA.jpg/330px-Rasputin_PA.jpg",
+  "quote": "（神秘主义）",
+  "intro": "拉斯普京（1869—1916），妖僧，深得皇室信任，被刺杀。"
+ },
+ "stolypin": {
+  "name": "斯托雷平",
+  "char": "斯",
+  "nation": "俄国",
+  "title": "改革大臣",
+  "desc": "你与斯托雷平最像——斯托雷平（1862—1911），改革大臣，土地改革，被刺杀。",
+  "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1f/Pyotr_Stolypin_LOC_07327.jpg/330px-Pyotr_Stolypin_LOC_07327.jpg",
+  "quote": "先安定，后改革",
+  "intro": "斯托雷平（1862—1911），改革大臣，土地改革，被刺杀。"
+ },
+ "denikin": {
+  "name": "邓尼金",
+  "char": "邓",
+  "nation": "俄国",
+  "title": "白军将领",
+  "desc": "你与邓尼金最像——邓尼金（1872—1947），白军将领。",
+  "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/23/Anton_Denikin_1938%2C_Paris.png/330px-Anton_Denikin_1938%2C_Paris.png",
+  "quote": "（白军）",
+  "intro": "邓尼金（1872—1947），白军将领。"
+ },
+ "kolchak": {
+  "name": "高尔察克",
+  "char": "高",
+  "nation": "俄国",
+  "title": "白军海军上将",
+  "desc": "你与高尔察克最像——高尔察克（1874—1920），白军海军上将，被处决。",
+  "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e1/Vice-Admiral_Kolchak%2C_1916.jpg/330px-Vice-Admiral_Kolchak%2C_1916.jpg",
+  "quote": "（白军）",
+  "intro": "高尔察克（1874—1920），白军海军上将，被处决。"
+ },
+ "wrangel": {
+  "name": "弗兰格尔",
+  "char": "弗",
+  "nation": "俄国",
+  "title": "白军统帅",
+  "desc": "你与弗兰格尔最像——弗兰格尔（1878—1928），白军最后统帅。",
+  "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e3/Pyotr_Wrangel%2C_portrait_medium.jpg/330px-Pyotr_Wrangel%2C_portrait_medium.jpg",
+  "quote": "（白军）",
+  "intro": "弗兰格尔（1878—1928），白军最后统帅。"
+ },
+ "kornilov": {
+  "name": "科尔尼洛夫",
+  "char": "科",
+  "nation": "俄国",
+  "title": "政变将军",
+  "desc": "你与科尔尼洛夫最像——科尔尼洛夫（1870—1918），将军，发动政变失败。",
+  "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/36/Kornilov1916.jpeg/330px-Kornilov1916.jpeg",
+  "quote": "（政变）",
+  "intro": "科尔尼洛夫（1870—1918），将军，发动政变失败。"
+ },
+ "kropotkin": {
+  "name": "克鲁泡特金",
+  "char": "克",
+  "nation": "俄国",
+  "title": "无政府主义理论家",
+  "desc": "你与克鲁泡特金最像——克鲁泡特金（1842—1921），无政府主义理论家。",
+  "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f5/%D0%9A%D1%80%D0%BE%D0%BF%D0%BE%D1%82%D0%BA%D0%B8%D0%BD%2C_%D0%9F%D0%B5%D1%82%D1%80_%D0%90%D0%BB%D0%B5%D0%BA%D1%81%D0%B0%D0%BD%D0%B4%D1%80%D0%BE%D0%B2%D0%B8%D1%87_%281842-1921%3B_%D0%BF%D1%80%D0%B8%D0%BC%D0%B5%D1%80%D0%BD%D0%BE_1876%29.jpg/330px-%D0%9A%D1%80%D0%BE%D0%BF%D0%BE%D1%82%D0%BA%D0%B8%D0%BD%2C_%D0%9F%D0%B5%D1%82%D1%80_%D0%90%D0%BB%D0%B5%D0%BA%D1%81%D0%B0%D0%BD%D0%B4%D1%80%D0%BE%D0%B2%D0%B8%D1%87_%281842-1921%3B_%D0%BF%D1%80%D0%B8%D0%BC%D0%B5%D1%80%D0%BD%D0%BE_1876%29.jpg",
+  "quote": "互助论",
+  "intro": "克鲁泡特金（1842—1921），无政府主义理论家。"
+ },
+ "makhno": {
+  "name": "马赫诺",
+  "char": "马",
+  "nation": "俄国",
+  "title": "无政府起义军领袖",
+  "desc": "你与马赫诺最像——马赫诺（1888—1934），乌克兰无政府起义军领袖。",
+  "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/03/1921._%D0%9D%D0%B5%D1%81%D1%82%D0%BE%D1%80_%D0%9C%D0%B0%D1%85%D0%BD%D0%BE_%D0%B2_%D0%BB%D0%B0%D0%B3%D0%B5%D1%80%D0%B5_%D0%B4%D0%BB%D1%8F_%D0%BF%D0%B5%D1%80%D0%B5%D0%BC%D0%B5%D1%89%D0%B5%D0%BD%D0%BD%D1%8B%D1%85_%D0%BB%D0%B8%D1%86_%D0%B2_%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D0%B8.jpg/330px-1921._%D0%9D%D0%B5%D1%81%D1%82%D0%BE%D1%80_%D0%9C%D0%B0%D1%85%D0%BD%D0%BE_%D0%B2_%D0%BB%D0%B0%D0%B3%D0%B5%D1%80%D0%B5_%D0%B4%D0%BB%D1%8F_%D0%BF%D0%B5%D1%80%D0%B5%D0%BC%D0%B5%D1%89%D0%B5%D0%BD%D0%BD%D1%8B%D1%85_%D0%BB%D0%B8%D1%86_%D0%B2_%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D0%B8.jpg",
+  "quote": "自由土地",
+  "intro": "马赫诺（1888—1934），乌克兰无政府起义军领袖。"
+ },
+ "gorky": {
+  "name": "高尔基",
+  "char": "高",
+  "nation": "俄国",
+  "title": "文学家",
+  "desc": "你与高尔基最像——高尔基（1868—1936），文学家，革命同情者与批评者。",
+  "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/16/Maxim_Gorky_1926.jpg/330px-Maxim_Gorky_1926.jpg",
+  "quote": "海燕之歌",
+  "intro": "高尔基（1868—1936），文学家，革命同情者与批评者。"
+ },
+ "mayakovsky": {
+  "name": "马雅可夫斯基",
+  "char": "马",
+  "nation": "俄国",
+  "title": "未来派诗人",
+  "desc": "你与马雅可夫斯基最像——马雅可夫斯基（1893—1930），未来派诗人，自杀。",
+  "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6a/Majakovszkij_%28cropped%29.jpg/330px-Majakovszkij_%28cropped%29.jpg",
+  "quote": "未来主义",
+  "intro": "马雅可夫斯基（1893—1930），未来派诗人，自杀。"
+ },
+ "yesenin": {
+  "name": "叶赛宁",
+  "char": "叶",
+  "nation": "俄国",
+  "title": "诗人",
+  "desc": "你与叶赛宁最像——叶赛宁（1895—1925），诗人，颓废，自杀。",
+  "img": "https://upload.wikimedia.org/wikipedia/commons/c/c0/Sergey_Yesenin.jpg",
+  "quote": "（田园诗）",
+  "intro": "叶赛宁（1895—1925），诗人，颓废，自杀。"
+ },
+ "witte": {
+  "name": "维特",
+  "char": "维",
+  "nation": "俄国",
+  "title": "工业化大臣",
+  "desc": "你与维特最像——维特（1849—1915），改革大臣，工业化推动者。",
+  "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d8/SergeiWitte01548v.jpg/330px-SergeiWitte01548v.jpg",
+  "quote": "工业化",
+  "intro": "维特（1849—1915），改革大臣，工业化推动者。"
+ },
+ "blok": {
+  "name": "布洛克",
+  "char": "布",
+  "nation": "俄国",
+  "title": "象征派诗人",
+  "desc": "你与布洛克最像——布洛克（1880—1921），象征派诗人，著《十二个》。",
+  "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f8/%D0%91%D0%BB%D0%BE%D0%BA_%D0%90%D0%BB.1910%D0%B5.JPG/330px-%D0%91%D0%BB%D0%BE%D0%BA_%D0%90%D0%BB.1910%D0%B5.JPG",
+  "quote": "十二个",
+  "intro": "布洛克（1880—1921），象征派诗人，著《十二个》。"
+ }
+};
+const questions = [
+ {
+  "d": 0,
+  "q": "布尔什维克与孟什维克之争，你认同哪种党组织？",
+  "options": [
+   {
+    "t": "铁的纪律，先锋队专政。",
+    "s": {
+     "lenin": 3,
+     "stalin": 2,
+     "dzerzhinsky": 2,
+     "sverdlov": 1
+    },
+    "exclude": [
+     "martov",
+     "axelrod",
+     "plekhanov",
+     "kerensky",
+     "chernov"
+    ]
+   },
+   {
+    "t": "民主社会主义，成员广泛。",
+    "s": {
+     "martov": 3,
+     "axelrod": 2,
+     "plekhanov": 2,
+     "kerensky": 1
+    },
+    "exclude": [
+     "lenin",
+     "stalin",
+     "dzerzhinsky",
+     "sverdlov",
+     "zinoviev"
+    ]
+   },
+   {
+    "t": "革命但保留党内民主。",
+    "s": {
+     "trotsky": 1,
+     "bukharin": 1,
+     "kollontai": 1
+    }
+   },
+   {
+    "t": "不要政党，直接行动。",
+    "s": {
+     "kropotkin": 2,
+     "makhno": 2,
+     "savinkov": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 0,
+  "q": "对十月武装起义，你的态度？",
+  "options": [
+   {
+    "t": "武装起义，立即夺权。",
+    "s": {
+     "lenin": 3,
+     "trotsky": 2,
+     "stalin": 2
+    },
+    "exclude": [
+     "kamenev",
+     "zinoviev",
+     "kerensky",
+     "martov",
+     "milyukov",
+     "chernov"
+    ]
+   },
+   {
+    "t": "议会道路，和平过渡。",
+    "s": {
+     "kamenev": 2,
+     "zinoviev": 2,
+     "martov": 2,
+     "kerensky": 1
+    },
+    "exclude": [
+     "lenin",
+     "trotsky",
+     "stalin"
+    ]
+   },
+   {
+    "t": "起义但时机未到。",
+    "s": {
+     "kamenev": 1,
+     "bukharin": 1
+    }
+   },
+   {
+    "t": "反对一切革命。",
+    "s": {
+     "nicholas": 2,
+     "denikin": 1,
+     "kolchak": 1,
+     "wrangel": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 0,
+  "q": "革命与改良之间，你更认同？",
+  "options": [
+   {
+    "t": "彻底革命，推翻一切。",
+    "s": {
+     "lenin": 2,
+     "trotsky": 2,
+     "stalin": 1
+    },
+    "exclude": [
+     "stolypin",
+     "witte",
+     "milyukov",
+     "guchkov",
+     "nicholas"
+    ]
+   },
+   {
+    "t": "自上而下改革。",
+    "s": {
+     "stolypin": 3,
+     "witte": 2,
+     "milyukov": 1
+    },
+    "exclude": [
+     "lenin",
+     "trotsky",
+     "stalin",
+     "kropotkin"
+    ]
+   },
+   {
+    "t": "渐进改良，争取立宪。",
+    "s": {
+     "milyukov": 2,
+     "guchkov": 1,
+     "rodzianko": 1
+    }
+   },
+   {
+    "t": "维持君主专制。",
+    "s": {
+     "nicholas": 3,
+     "rasputin": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 0,
+  "q": "对土地问题，你的立场？",
+  "options": [
+   {
+    "t": "土地归农民，村社自治。",
+    "s": {
+     "chernov": 3,
+     "spiridonova": 2,
+     "kerensky": 1
+    },
+    "exclude": [
+     "lenin",
+     "stalin",
+     "trotsky"
+    ]
+   },
+   {
+    "t": "土地国有，集体化。",
+    "s": {
+     "lenin": 2,
+     "stalin": 2,
+     "trotsky": 1
+    },
+    "exclude": [
+     "chernov",
+     "spiridonova",
+     "stolypin",
+     "witte"
+    ]
+   },
+   {
+    "t": "土地私有，鼓励富农。",
+    "s": {
+     "stolypin": 3,
+     "witte": 1,
+     "guchkov": 1
+    },
+    "exclude": [
+     "chernov",
+     "spiridonova",
+     "lenin",
+     "stalin"
+    ]
+   },
+   {
+    "t": "无政府，自由土地。",
+    "s": {
+     "makhno": 3,
+     "kropotkin": 2
+    }
+   }
+  ]
+ },
+ {
+  "d": 0,
+  "q": "无政府主义与国家社会主义，你认同哪种？",
+  "options": [
+   {
+    "t": "无政府，互助社会。",
+    "s": {
+     "kropotkin": 3,
+     "makhno": 2
+    },
+    "exclude": [
+     "lenin",
+     "stalin",
+     "dzerzhinsky",
+     "nicholas",
+     "denikin"
+    ]
+   },
+   {
+    "t": "无产阶级专政国家。",
+    "s": {
+     "lenin": 2,
+     "stalin": 2,
+     "dzerzhinsky": 1
+    },
+    "exclude": [
+     "kropotkin",
+     "makhno"
+    ]
+   },
+   {
+    "t": "民主共和国。",
+    "s": {
+     "kerensky": 1,
+     "milyukov": 1,
+     "martov": 1
+    }
+   },
+   {
+    "t": "君主专制。",
+    "s": {
+     "nicholas": 2,
+     "rasputin": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 0,
+  "q": "立宪民主与革命夺权，你倾向？",
+  "options": [
+   {
+    "t": "立宪民主，渐进宪政。",
+    "s": {
+     "milyukov": 3,
+     "guchkov": 2,
+     "rodzianko": 2
+    },
+    "exclude": [
+     "lenin",
+     "trotsky",
+     "stalin",
+     "nicholas"
+    ]
+   },
+   {
+    "t": "革命夺权，无产阶级。",
+    "s": {
+     "lenin": 2,
+     "trotsky": 2
+    },
+    "exclude": [
+     "milyukov",
+     "guchkov",
+     "rodzianko",
+     "nicholas"
+    ]
+   },
+   {
+    "t": "君主立宪，改良。",
+    "s": {
+     "stolypin": 1,
+     "witte": 2
+    }
+   },
+   {
+    "t": "绝对君主。",
+    "s": {
+     "nicholas": 2,
+     "rasputin": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 0,
+  "q": "对二月革命，你的评价？",
+  "options": [
+   {
+    "t": "是走向社会主义的一步。",
+    "s": {
+     "lenin": 2,
+     "trotsky": 2,
+     "stalin": 1
+    }
+   },
+   {
+    "t": "是民主的胜利。",
+    "s": {
+     "milyukov": 2,
+     "guchkov": 2,
+     "kerensky": 2,
+     "rodzianko": 1
+    }
+   },
+   {
+    "t": "是一场灾难。",
+    "s": {
+     "nicholas": 2,
+     "denikin": 1,
+     "kolchak": 1,
+     "kornilov": 1
+    }
+   },
+   {
+    "t": "革命不够彻底。",
+    "s": {
+     "kropotkin": 1,
+     "makhno": 1,
+     "spiridonova": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 0,
+  "q": "个人恐怖与群众运动，你认同哪种斗争？",
+  "options": [
+   {
+    "t": "个人恐怖，刺杀暴政。",
+    "s": {
+     "savinkov": 3,
+     "spiridonova": 2
+    },
+    "exclude": [
+     "lenin",
+     "martov",
+     "kropotkin"
+    ]
+   },
+   {
+    "t": "群众运动，罢工起义。",
+    "s": {
+     "lenin": 2,
+     "trotsky": 2,
+     "stalin": 1
+    },
+    "exclude": [
+     "savinkov"
+    ]
+   },
+   {
+    "t": "非暴力，议会抗争。",
+    "s": {
+     "martov": 2,
+     "milyukov": 1,
+     "kerensky": 1
+    }
+   },
+   {
+    "t": "都反对，维持秩序。",
+    "s": {
+     "nicholas": 2,
+     "stolypin": 1,
+     "denikin": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 1,
+  "q": "战时共产主义与新经济政策，你认同哪种？",
+  "options": [
+   {
+    "t": "战时共产，余粮征集。",
+    "s": {
+     "lenin": 2,
+     "trotsky": 2,
+     "stalin": 1
+    },
+    "exclude": [
+     "bukharin",
+     "kropotkin",
+     "makhno",
+     "witte",
+     "stolypin"
+    ]
+   },
+   {
+    "t": "新经济政策，市场调节。",
+    "s": {
+     "bukharin": 3,
+     "lenin": 1
+    },
+    "exclude": [
+     "stalin",
+     "trotsky",
+     "makhno"
+    ]
+   },
+   {
+    "t": "自由市场，资本主义。",
+    "s": {
+     "witte": 2,
+     "stolypin": 1,
+     "guchkov": 1
+    },
+    "exclude": [
+     "lenin",
+     "stalin",
+     "bukharin"
+    ]
+   },
+   {
+    "t": "无政府经济，互助交换。",
+    "s": {
+     "makhno": 2,
+     "kropotkin": 2
+    }
+   }
+  ]
+ },
+ {
+  "d": 1,
+  "q": "对富农（库拉克），你的态度？",
+  "options": [
+   {
+    "t": "消灭富农，集体化。",
+    "s": {
+     "stalin": 3,
+     "trotsky": 1
+    },
+    "exclude": [
+     "bukharin",
+     "stolypin",
+     "chernov",
+     "makhno"
+    ]
+   },
+   {
+    "t": "允许富农，繁荣农业。",
+    "s": {
+     "bukharin": 3,
+     "stolypin": 1
+    },
+    "exclude": [
+     "stalin",
+     "trotsky"
+    ]
+   },
+   {
+    "t": "富农是乡村骨干。",
+    "s": {
+     "stolypin": 2,
+     "witte": 1
+    }
+   },
+   {
+    "t": "农民自治，不干涉。",
+    "s": {
+     "makhno": 2,
+     "chernov": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 1,
+  "q": "工业化路线，你倾向？",
+  "options": [
+   {
+    "t": "快速重工业化优先。",
+    "s": {
+     "stalin": 3,
+     "trotsky": 2
+    },
+    "exclude": [
+     "bukharin",
+     "witte"
+    ]
+   },
+   {
+    "t": "渐进发展，轻工优先。",
+    "s": {
+     "bukharin": 2,
+     "witte": 1
+    },
+    "exclude": [
+     "stalin",
+     "trotsky"
+    ]
+   },
+   {
+    "t": "资本主义工业化。",
+    "s": {
+     "witte": 3,
+     "guchkov": 1
+    }
+   },
+   {
+    "t": "农业立国。",
+    "s": {
+     "chernov": 1,
+     "stolypin": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 1,
+  "q": "对农业集体化，你的态度？",
+  "options": [
+   {
+    "t": "强制集体化。",
+    "s": {
+     "stalin": 3
+    },
+    "exclude": [
+     "bukharin",
+     "chernov",
+     "makhno",
+     "stolypin",
+     "nicholas"
+    ]
+   },
+   {
+    "t": "自愿合作，反对强制。",
+    "s": {
+     "bukharin": 2,
+     "chernov": 1,
+     "kropotkin": 1
+    },
+    "exclude": [
+     "stalin"
+    ]
+   },
+   {
+    "t": "私有农业。",
+    "s": {
+     "stolypin": 2,
+     "witte": 1,
+     "guchkov": 1
+    }
+   },
+   {
+    "t": "自由土地，村社。",
+    "s": {
+     "makhno": 2,
+     "chernov": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 1,
+  "q": "粮食征收与市场自由，你认同？",
+  "options": [
+   {
+    "t": "余粮征集，保障城市。",
+    "s": {
+     "lenin": 2,
+     "trotsky": 1,
+     "stalin": 1
+    },
+    "exclude": [
+     "bukharin",
+     "makhno",
+     "witte"
+    ]
+   },
+   {
+    "t": "粮食市场，自由买卖。",
+    "s": {
+     "bukharin": 2,
+     "witte": 1
+    },
+    "exclude": [
+     "lenin",
+     "stalin"
+    ]
+   },
+   {
+    "t": "粮食税，折中。",
+    "s": {
+     "bukharin": 1,
+     "lenin": 1
+    }
+   },
+   {
+    "t": "自给自足，不征收。",
+    "s": {
+     "makhno": 2,
+     "kropotkin": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 1,
+  "q": "对外资与技术，你的态度？",
+  "options": [
+   {
+    "t": "闭关建设，自力更生。",
+    "s": {
+     "stalin": 2,
+     "lenin": 1
+    },
+    "exclude": [
+     "witte",
+     "trotsky",
+     "bukharin"
+    ]
+   },
+   {
+    "t": "引进外资技术。",
+    "s": {
+     "witte": 2,
+     "trotsky": 1,
+     "bukharin": 1,
+     "lenin": 1
+    }
+   },
+   {
+    "t": "世界市场自由贸易。",
+    "s": {
+     "witte": 1,
+     "guchkov": 1
+    }
+   },
+   {
+    "t": "无国家，自由交换。",
+    "s": {
+     "kropotkin": 1,
+     "makhno": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 1,
+  "q": "对资本主义，你的态度？",
+  "options": [
+   {
+    "t": "消灭资本主义。",
+    "s": {
+     "stalin": 2,
+     "trotsky": 2,
+     "dzerzhinsky": 1
+    },
+    "exclude": [
+     "witte",
+     "guchkov",
+     "milyukov",
+     "bukharin"
+    ]
+   },
+   {
+    "t": "利用资本主义发展。",
+    "s": {
+     "bukharin": 2,
+     "lenin": 1,
+     "witte": 1
+    },
+    "exclude": [
+     "stalin",
+     "trotsky"
+    ]
+   },
+   {
+    "t": "资本主义是正道。",
+    "s": {
+     "witte": 2,
+     "guchkov": 2,
+     "stolypin": 1
+    }
+   },
+   {
+    "t": "不要金钱，互助。",
+    "s": {
+     "kropotkin": 2,
+     "makhno": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 1,
+  "q": "你心中的经济理想？",
+  "options": [
+   {
+    "t": "共产主义，各取所需。",
+    "s": {
+     "lenin": 2,
+     "trotsky": 1,
+     "stalin": 1
+    }
+   },
+   {
+    "t": "社会主义，按劳分配。",
+    "s": {
+     "bukharin": 2,
+     "plekhanov": 1,
+     "martov": 1
+    }
+   },
+   {
+    "t": "资本主义繁荣。",
+    "s": {
+     "witte": 2,
+     "guchkov": 1
+    }
+   },
+   {
+    "t": "农业村社自治。",
+    "s": {
+     "chernov": 1,
+     "makhno": 1,
+     "kropotkin": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 2,
+  "q": "契卡镇压与法治，你认同哪种？",
+  "options": [
+   {
+    "t": "契卡镇压，宁可错杀。",
+    "s": {
+     "dzerzhinsky": 3,
+     "stalin": 2
+    },
+    "exclude": [
+     "martov",
+     "kerensky",
+     "milyukov",
+     "plekhanov",
+     "kropotkin"
+    ]
+   },
+   {
+    "t": "法治，保障人权。",
+    "s": {
+     "martov": 2,
+     "kerensky": 2,
+     "milyukov": 1,
+     "plekhanov": 1
+    },
+    "exclude": [
+     "dzerzhinsky",
+     "stalin",
+     "nicholas"
+    ]
+   },
+   {
+    "t": "严厉但讲程序。",
+    "s": {
+     "trotsky": 1,
+     "lenin": 1
+    }
+   },
+   {
+    "t": "君主专制镇压。",
+    "s": {
+     "nicholas": 2,
+     "denikin": 1,
+     "kolchak": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 2,
+  "q": "集权与民主，你倾向？",
+  "options": [
+   {
+    "t": "集权，一人独断。",
+    "s": {
+     "stalin": 3,
+     "nicholas": 1
+    },
+    "exclude": [
+     "martov",
+     "kerensky",
+     "kropotkin",
+     "milyukov",
+     "trotsky"
+    ]
+   },
+   {
+    "t": "党内民主，集体领导。",
+    "s": {
+     "trotsky": 2,
+     "bukharin": 2,
+     "martov": 1,
+     "lenin": 1
+    },
+    "exclude": [
+     "stalin",
+     "nicholas"
+    ]
+   },
+   {
+    "t": "议会民主。",
+    "s": {
+     "kerensky": 2,
+     "milyukov": 2,
+     "guchkov": 1
+    }
+   },
+   {
+    "t": "无政府，不要国家。",
+    "s": {
+     "kropotkin": 2,
+     "makhno": 2
+    }
+   }
+  ]
+ },
+ {
+  "d": 2,
+  "q": "对末代沙皇的处置，你主张？",
+  "options": [
+   {
+    "t": "处决沙皇全家。",
+    "s": {
+     "lenin": 1,
+     "dzerzhinsky": 2,
+     "stalin": 1
+    },
+    "exclude": [
+     "nicholas",
+     "denikin",
+     "kolchak",
+     "wrangel",
+     "milyukov"
+    ]
+   },
+   {
+    "t": "流放，留其性命。",
+    "s": {
+     "kerensky": 2,
+     "milyukov": 1,
+     "plekhanov": 1
+    },
+    "exclude": [
+     "dzerzhinsky",
+     "nicholas"
+    ]
+   },
+   {
+    "t": "保留君主立宪。",
+    "s": {
+     "milyukov": 1,
+     "guchkov": 1,
+     "stolypin": 1,
+     "witte": 1
+    }
+   },
+   {
+    "t": "拥护沙皇复位。",
+    "s": {
+     "nicholas": 2,
+     "denikin": 2,
+     "kolchak": 2,
+     "wrangel": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 2,
+  "q": "内战中，你站在哪一方？",
+  "options": [
+   {
+    "t": "红军，革命武装。",
+    "s": {
+     "trotsky": 3,
+     "lenin": 2,
+     "stalin": 1,
+     "tukhachevsky": 1
+    },
+    "exclude": [
+     "denikin",
+     "kolchak",
+     "wrangel",
+     "kornilov",
+     "nicholas"
+    ]
+   },
+   {
+    "t": "白军，复辟秩序。",
+    "s": {
+     "denikin": 2,
+     "kolchak": 2,
+     "wrangel": 2,
+     "kornilov": 1
+    },
+    "exclude": [
+     "trotsky",
+     "lenin",
+     "stalin",
+     "tukhachevsky"
+    ]
+   },
+   {
+    "t": "中立，和平。",
+    "s": {
+     "kerensky": 1,
+     "plekhanov": 1,
+     "gorky": 1
+    }
+   },
+   {
+    "t": "独立起义军。",
+    "s": {
+     "makhno": 3,
+     "kropotkin": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 2,
+  "q": "对反对派，你的处置？",
+  "options": [
+   {
+    "t": "清洗异己，肉体消灭。",
+    "s": {
+     "stalin": 3,
+     "dzerzhinsky": 2
+    },
+    "exclude": [
+     "martov",
+     "kerensky",
+     "plekhanov",
+     "kropotkin",
+     "trotsky"
+    ]
+   },
+   {
+    "t": "允许党内派别。",
+    "s": {
+     "trotsky": 2,
+     "bukharin": 2,
+     "martov": 1
+    },
+    "exclude": [
+     "stalin",
+     "dzerzhinsky"
+    ]
+   },
+   {
+    "t": "议会反对派。",
+    "s": {
+     "milyukov": 2,
+     "kerensky": 1,
+     "guchkov": 1
+    }
+   },
+   {
+    "t": "消灭一切反对派。",
+    "s": {
+     "nicholas": 1,
+     "denikin": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 2,
+  "q": "领袖崇拜与集体领导，你认同？",
+  "options": [
+   {
+    "t": "领袖崇拜，个人权威。",
+    "s": {
+     "stalin": 3
+    },
+    "exclude": [
+     "trotsky",
+     "bukharin",
+     "martov",
+     "kerensky"
+    ]
+   },
+   {
+    "t": "集体领导，反对个人崇拜。",
+    "s": {
+     "trotsky": 2,
+     "bukharin": 2,
+     "lenin": 1,
+     "martov": 1
+    },
+    "exclude": [
+     "stalin",
+     "nicholas"
+    ]
+   },
+   {
+    "t": "民主选举。",
+    "s": {
+     "kerensky": 1,
+     "milyukov": 1
+    }
+   },
+   {
+    "t": "君主权威。",
+    "s": {
+     "nicholas": 2,
+     "rasputin": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 2,
+  "q": "对科尔尼洛夫政变，你的态度？",
+  "options": [
+   {
+    "t": "支持政变，恢复秩序。",
+    "s": {
+     "kornilov": 3,
+     "denikin": 2,
+     "kolchak": 1
+    },
+    "exclude": [
+     "lenin",
+     "trotsky",
+     "kerensky",
+     "milyukov"
+    ]
+   },
+   {
+    "t": "反对政变，维护共和。",
+    "s": {
+     "kerensky": 2,
+     "milyukov": 1
+    },
+    "exclude": [
+     "kornilov",
+     "denikin",
+     "nicholas"
+    ]
+   },
+   {
+    "t": "政变是夺权手段。",
+    "s": {
+     "lenin": 1,
+     "stalin": 1
+    }
+   },
+   {
+    "t": "拥护沙皇。",
+    "s": {
+     "nicholas": 2,
+     "rasputin": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 2,
+  "q": "为达目的，你的手段底线？",
+  "options": [
+   {
+    "t": "不择手段。",
+    "s": {
+     "stalin": 2,
+     "dzerzhinsky": 2,
+     "savinkov": 2
+    },
+    "exclude": [
+     "plekhanov",
+     "martov",
+     "kropotkin",
+     "kerensky"
+    ]
+   },
+   {
+    "t": "坚持原则，讲道义。",
+    "s": {
+     "plekhanov": 2,
+     "martov": 2,
+     "kropotkin": 1
+    },
+    "exclude": [
+     "stalin",
+     "dzerzhinsky",
+     "savinkov"
+    ]
+   },
+   {
+    "t": "灵活变通。",
+    "s": {
+     "lenin": 1,
+     "bukharin": 1,
+     "mikoyan": 1
+    }
+   },
+   {
+    "t": "不关心手段。",
+    "s": {
+     "nicholas": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 3,
+  "q": "一国社会主义与不断革命，你认同？",
+  "options": [
+   {
+    "t": "一国建成社会主义。",
+    "s": {
+     "stalin": 3,
+     "bukharin": 1
+    },
+    "exclude": [
+     "trotsky",
+     "zinoviev"
+    ]
+   },
+   {
+    "t": "不断革命，世界革命。",
+    "s": {
+     "trotsky": 3,
+     "zinoviev": 2
+    },
+    "exclude": [
+     "stalin",
+     "bukharin"
+    ]
+   },
+   {
+    "t": "民族自决，各自建国。",
+    "s": {
+     "lenin": 1,
+     "spiridonova": 1,
+     "makhno": 1
+    }
+   },
+   {
+    "t": "大俄罗斯主义。",
+    "s": {
+     "nicholas": 1,
+     "denikin": 2,
+     "kolchak": 1,
+     "wrangel": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 3,
+  "q": "世界革命与和平共处，你倾向？",
+  "options": [
+   {
+    "t": "输出世界革命。",
+    "s": {
+     "trotsky": 2,
+     "zinoviev": 2,
+     "lenin": 1
+    },
+    "exclude": [
+     "stalin",
+     "witte",
+     "kerensky"
+    ]
+   },
+   {
+    "t": "和平共处，一国建设。",
+    "s": {
+     "stalin": 2,
+     "bukharin": 1
+    },
+    "exclude": [
+     "trotsky",
+     "zinoviev"
+    ]
+   },
+   {
+    "t": "民族主义，不输出。",
+    "s": {
+     "nicholas": 1,
+     "denikin": 1
+    }
+   },
+   {
+    "t": "国际和平主义。",
+    "s": {
+     "kropotkin": 1,
+     "kerensky": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 3,
+  "q": "民族自决与中央集权，你认同？",
+  "options": [
+   {
+    "t": "民族自决，允许独立。",
+    "s": {
+     "lenin": 1,
+     "spiridonova": 1,
+     "makhno": 1,
+     "kropotkin": 1
+    },
+    "exclude": [
+     "stalin",
+     "nicholas",
+     "denikin",
+     "kolchak"
+    ]
+   },
+   {
+    "t": "中央集权，大一统。",
+    "s": {
+     "stalin": 2,
+     "nicholas": 1,
+     "denikin": 2,
+     "kolchak": 1
+    },
+    "exclude": [
+     "makhno",
+     "kropotkin",
+     "spiridonova"
+    ]
+   },
+   {
+    "t": "联邦制。",
+    "s": {
+     "lenin": 1,
+     "trotsky": 1,
+     "bukharin": 1
+    }
+   },
+   {
+    "t": "泛斯拉夫。",
+    "s": {
+     "nicholas": 1,
+     "kolchak": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 3,
+  "q": "对《布列斯特和约》（对德屈辱和约），你的态度？",
+  "options": [
+   {
+    "t": "接受屈辱和约，争取喘息。",
+    "s": {
+     "lenin": 2,
+     "stalin": 1
+    },
+    "exclude": [
+     "trotsky",
+     "bukharin",
+     "zinoviev"
+    ]
+   },
+   {
+    "t": "拒绝和约，革命战争。",
+    "s": {
+     "trotsky": 2,
+     "bukharin": 2,
+     "zinoviev": 1
+    },
+    "exclude": [
+     "lenin",
+     "stalin"
+    ]
+   },
+   {
+    "t": "继续战争，维护协约。",
+    "s": {
+     "kerensky": 2,
+     "milyukov": 1,
+     "guchkov": 1
+    }
+   },
+   {
+    "t": "不战不和。",
+    "s": {
+     "trotsky": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 3,
+  "q": "对乌克兰、波兰、芬兰独立，你的立场？",
+  "options": [
+   {
+    "t": "镇压独立，维护统一。",
+    "s": {
+     "stalin": 2,
+     "denikin": 2,
+     "kolchak": 1
+    },
+    "exclude": [
+     "makhno",
+     "kropotkin",
+     "spiridonova"
+    ]
+   },
+   {
+    "t": "承认独立，民族自决。",
+    "s": {
+     "lenin": 1,
+     "spiridonova": 2,
+     "kropotkin": 1
+    },
+    "exclude": [
+     "stalin",
+     "denikin"
+    ]
+   },
+   {
+    "t": "无政府自由地区。",
+    "s": {
+     "makhno": 3,
+     "kropotkin": 2
+    }
+   },
+   {
+    "t": "大俄罗斯帝国。",
+    "s": {
+     "nicholas": 2,
+     "kolchak": 1,
+     "wrangel": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 3,
+  "q": "共产国际与独立自主，你认同？",
+  "options": [
+   {
+    "t": "共产国际领导世界革命。",
+    "s": {
+     "zinoviev": 3,
+     "trotsky": 1,
+     "lenin": 1
+    },
+    "exclude": [
+     "stalin",
+     "nicholas",
+     "denikin"
+    ]
+   },
+   {
+    "t": "一国自主，不干涉。",
+    "s": {
+     "stalin": 2
+    },
+    "exclude": [
+     "zinoviev",
+     "trotsky"
+    ]
+   },
+   {
+    "t": "民族国家独立。",
+    "s": {
+     "nicholas": 1,
+     "denikin": 1,
+     "kerensky": 1
+    }
+   },
+   {
+    "t": "无国界互助。",
+    "s": {
+     "kropotkin": 2,
+     "makhno": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 3,
+  "q": "对德国的态度？",
+  "options": [
+   {
+    "t": "对德复仇。",
+    "s": {
+     "nicholas": 1,
+     "denikin": 1,
+     "kolchak": 1
+    }
+   },
+   {
+    "t": "对德和谈妥协。",
+    "s": {
+     "lenin": 2,
+     "stalin": 1
+    }
+   },
+   {
+    "t": "世界革命不分国界。",
+    "s": {
+     "trotsky": 1,
+     "zinoviev": 1
+    }
+   },
+   {
+    "t": "反战和平。",
+    "s": {
+     "kropotkin": 1,
+     "kerensky": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 3,
+  "q": "泛斯拉夫主义与无产阶级国际主义，你认同？",
+  "options": [
+   {
+    "t": "泛斯拉夫，俄罗斯优先。",
+    "s": {
+     "nicholas": 2,
+     "denikin": 1,
+     "kolchak": 1
+    }
+   },
+   {
+    "t": "无产阶级国际主义。",
+    "s": {
+     "lenin": 1,
+     "trotsky": 1,
+     "zinoviev": 1
+    }
+   },
+   {
+    "t": "民族平等。",
+    "s": {
+     "spiridonova": 1,
+     "kropotkin": 1
+    }
+   },
+   {
+    "t": "不关心。",
+    "s": {
+     "witte": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 4,
+  "q": "未来主义与传统文艺，你认同哪种？",
+  "options": [
+   {
+    "t": "未来主义，先锋艺术。",
+    "s": {
+     "mayakovsky": 3,
+     "trotsky": 1
+    },
+    "exclude": [
+     "blok",
+     "yesenin",
+     "gorky",
+     "nicholas",
+     "stolypin"
+    ]
+   },
+   {
+    "t": "传统文艺，古典传承。",
+    "s": {
+     "blok": 2,
+     "gorky": 1,
+     "lunacharsky": 1
+    },
+    "exclude": [
+     "mayakovsky"
+    ]
+   },
+   {
+    "t": "现实主义，为人民。",
+    "s": {
+     "gorky": 2,
+     "lunacharsky": 2
+    }
+   },
+   {
+    "t": "田园抒情。",
+    "s": {
+     "yesenin": 2
+    }
+   }
+  ]
+ },
+ {
+  "d": 4,
+  "q": "对东正教，你的态度？",
+  "options": [
+   {
+    "t": "废除宗教，无神论。",
+    "s": {
+     "lenin": 2,
+     "stalin": 1,
+     "trotsky": 1
+    },
+    "exclude": [
+     "nicholas",
+     "rasputin",
+     "stolypin",
+     "denikin",
+     "kolchak"
+    ]
+   },
+   {
+    "t": "捍卫东正教。",
+    "s": {
+     "nicholas": 2,
+     "rasputin": 2,
+     "denikin": 1,
+     "kolchak": 1
+    },
+    "exclude": [
+     "lenin",
+     "stalin"
+    ]
+   },
+   {
+    "t": "宗教自由，宽容。",
+    "s": {
+     "kerensky": 1,
+     "milyukov": 1,
+     "lunacharsky": 1
+    }
+   },
+   {
+    "t": "神秘主义。",
+    "s": {
+     "rasputin": 2,
+     "blok": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 4,
+  "q": "对妇女解放，你的态度？",
+  "options": [
+   {
+    "t": "妇女解放，性自由。",
+    "s": {
+     "kollontai": 3,
+     "spiridonova": 1
+    },
+    "exclude": [
+     "nicholas",
+     "stolypin",
+     "rasputin"
+    ]
+   },
+   {
+    "t": "传统家庭，贤妻良母。",
+    "s": {
+     "nicholas": 2,
+     "stolypin": 1,
+     "rasputin": 1
+    },
+    "exclude": [
+     "kollontai",
+     "spiridonova"
+    ]
+   },
+   {
+    "t": "妇女参政，渐进。",
+    "s": {
+     "kerensky": 1,
+     "milyukov": 1
+    }
+   },
+   {
+    "t": "不关心。",
+    "s": {
+     "witte": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 4,
+  "q": "知识分子与工农，你更看重谁？",
+  "options": [
+   {
+    "t": "知识分子启蒙。",
+    "s": {
+     "plekhanov": 1,
+     "milyukov": 2,
+     "gorky": 1,
+     "blok": 1
+    }
+   },
+   {
+    "t": "工农是革命主力。",
+    "s": {
+     "lenin": 2,
+     "stalin": 1,
+     "trotsky": 1
+    }
+   },
+   {
+    "t": "工农与知识分子结合。",
+    "s": {
+     "lunacharsky": 2,
+     "gorky": 1,
+     "kollontai": 1
+    }
+   },
+   {
+    "t": "精英贵族。",
+    "s": {
+     "nicholas": 1,
+     "denikin": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 4,
+  "q": "对乡村与农民，你的态度？",
+  "options": [
+   {
+    "t": "农民是革命基础。",
+    "s": {
+     "chernov": 2,
+     "spiridonova": 2,
+     "makhno": 1
+    }
+   },
+   {
+    "t": "农村落后，城市优先。",
+    "s": {
+     "stalin": 2,
+     "trotsky": 1
+    }
+   },
+   {
+    "t": "乡村田园诗。",
+    "s": {
+     "yesenin": 2,
+     "blok": 1
+    }
+   },
+   {
+    "t": "地主贵族。",
+    "s": {
+     "nicholas": 1,
+     "stolypin": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 4,
+  "q": "你的性格更接近？",
+  "options": [
+   {
+    "t": "强硬果决。",
+    "s": {
+     "stalin": 2,
+     "dzerzhinsky": 2,
+     "lenin": 1
+    }
+   },
+   {
+    "t": "温和宽容。",
+    "s": {
+     "bukharin": 2,
+     "martov": 1,
+     "kerensky": 1
+    }
+   },
+   {
+    "t": "理想主义。",
+    "s": {
+     "trotsky": 2,
+     "kropotkin": 1,
+     "mayakovsky": 1
+    }
+   },
+   {
+    "t": "务实现实。",
+    "s": {
+     "mikoyan": 2,
+     "witte": 1,
+     "stolypin": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 4,
+  "q": "你的人生信条？",
+  "options": [
+   {
+    "t": "为理想不惜一切。",
+    "s": {
+     "lenin": 2,
+     "trotsky": 2,
+     "kollontai": 1
+    }
+   },
+   {
+    "t": "务实渐进。",
+    "s": {
+     "bukharin": 1,
+     "witte": 1,
+     "stolypin": 1,
+     "mikoyan": 1
+    }
+   },
+   {
+    "t": "忠于信仰。",
+    "s": {
+     "nicholas": 1,
+     "rasputin": 1
+    }
+   },
+   {
+    "t": "艺术即生命。",
+    "s": {
+     "mayakovsky": 2,
+     "yesenin": 2,
+     "blok": 1
+    }
+   }
+  ]
+ },
+ {
+  "d": 4,
+  "q": "你希望被后世记住为？",
+  "options": [
+   {
+    "t": "革命领袖。",
+    "s": {
+     "lenin": 3,
+     "trotsky": 2,
+     "stalin": 1
+    }
+   },
+   {
+    "t": "改革者。",
+    "s": {
+     "stolypin": 2,
+     "witte": 2,
+     "bukharin": 1
+    }
+   },
+   {
+    "t": "自由斗士。",
+    "s": {
+     "kerensky": 2,
+     "milyukov": 1,
+     "kropotkin": 2,
+     "makhno": 1
+    }
+   },
+   {
+    "t": "正统捍卫者。",
+    "s": {
+     "nicholas": 2,
+     "denikin": 1,
+     "kolchak": 1,
+     "wrangel": 1
+    }
+   }
+  ]
+ }
+];
+const DIMS = ["革命道路","经济路线","权力与手段","民族与国际","文化与性格"];
+const LETTERS = ['A','B','C','D'];
+
+let current = 0;
+let scores = {};
+let answers = [];
+
+function startQuiz() {
+  document.getElementById('intro').classList.add('hidden');
+  document.getElementById('quiz').classList.remove('hidden');
+  current = 0; scores = {}; answers = [];
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[current];
+  document.getElementById('qNumText').textContent = `第 ${current+1} / ${questions.length} 题`;
+  document.getElementById('dimTag').textContent = DIMS[q.d];
+  document.getElementById('qText').textContent = q.q;
+  document.getElementById('progressBar').style.width = `${(current/questions.length)*100}%`;
+  const box = document.getElementById('qOptions');
+  box.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const el = document.createElement('div');
+    el.className = 'option' + (answers[current] === i ? ' selected' : '');
+    el.innerHTML = `<span class="letter">${LETTERS[i]}</span><span>${opt.t}</span>`;
+    el.onclick = () => selectOption(i);
+    box.appendChild(el);
+  });
+  document.getElementById('prevBtn').classList.toggle('hidden', current === 0);
+  const nextBtn = document.getElementById('nextBtn');
+  nextBtn.textContent = current === questions.length - 1 ? '查看结果' : '下一题';
+  nextBtn.disabled = answers[current] === undefined;
+}
+
+function selectOption(i) {
+  answers[current] = i;
+  document.getElementById('nextBtn').disabled = false;
+  document.querySelectorAll('#qOptions .option').forEach((el, idx) => { el.classList.toggle('selected', idx === i); });
+}
+
+function nextQuestion() {
+  if (answers[current] === undefined) return;
+  if (current < questions.length - 1) { current++; renderQuestion(); }
+  else showResult();
+}
+
+function prevQuestion() { if (current > 0) { current--; renderQuestion(); } }
+
+function showResult() {
+  const dimScores = [{}, {}, {}, {}, {}];
+  const excluded = new Set();
+  answers.forEach((ans, qi) => {
+    const opt = questions[qi].options[ans];
+    const s = opt.s;
+    const d = questions[qi].d;
+    for (const id in s) dimScores[d][id] = (dimScores[d][id] || 0) + s[id];
+    if (opt.exclude) opt.exclude.forEach(id => excluded.add(id));
+  });
+  const total = {};
+  for (const dim of dimScores) { for (const id in dim) total[id] = (total[id] || 0) + dim[id]; }
+  const ranked = Object.keys(total).filter(id => !excluded.has(id)).map(id => ({ id, score: total[id] })).sort((a,b) => b.score - a.score);
+
+  const top = ranked[0];
+  const maxScore = top.score;
+  const f = figures[top.id];
+
+  document.getElementById('quiz').classList.add('hidden');
+  document.getElementById('result').classList.remove('hidden');
+  document.getElementById('progressBar').style.width = '100%';
+  document.getElementById('rChar').textContent = f.char;
+  const imgEl = document.getElementById('rImg');
+  if (f.img) { imgEl.src = f.img; imgEl.onload = () => { imgEl.style.display = 'block'; }; imgEl.onerror = () => { imgEl.style.display = 'none'; }; }
+  document.getElementById('rName').textContent = f.name;
+  document.getElementById('rTitle').textContent = f.title;
+  document.getElementById('rQuote').textContent = f.quote;
+  document.getElementById('rQuoteSrc').textContent = '—— ' + f.name;
+  document.getElementById('rIntro').textContent = f.intro;
+  document.getElementById('rDesc').textContent = f.desc;
+  document.getElementById('rPct').textContent = '100%';
+  document.getElementById('rRegion').textContent = f.nation + ' · ' + f.title;
+
+  const dimsBox = document.getElementById('rDims');
+  dimsBox.innerHTML = '';
+  const dimParts = [];
+  DIMS.forEach((name, d) => {
+    const dimScore = dimScores[d][top.id] || 0;
+    let dimMax = 0;
+    for (const id in dimScores[d]) { if (!excluded.has(id) && dimScores[d][id] > dimMax) dimMax = dimScores[d][id]; }
+    const pct = dimMax ? Math.round((dimScore / dimMax) * 100) : 0;
+    dimsBox.innerHTML += `<div class="dim-item"><div class="dim-name">${name}</div><div class="dim-bar"><div class="dim-fill" style="width:${pct}%"></div></div><div class="dim-pct">${pct}%</div></div>`;
+    const level = pct >= 80 ? '高度契合' : (pct >= 50 ? '较为契合' : '有所差异');
+    dimParts.push(`${name}上${level}（${pct}%）`);
+  });
+  document.getElementById('rDimsText').textContent = '你与他——' + dimParts.join('，') + '。';
+
+  const rankBox = document.getElementById('rRank');
+  rankBox.innerHTML = '';
+  ranked.slice(0, 6).forEach((r, i) => {
+    const pct = Math.round((r.score / maxScore) * 100);
+    const rf = figures[r.id];
+    rankBox.innerHTML += `<div class="rank-item"><div class="name">${i===0?'★ ':''}${rf.name}</div><div class="rank-bar"><div class="rank-fill" style="width:${pct}%"></div></div><div class="pct">${pct}%</div></div>`;
+  });
+}
+
+function restart() {
+  document.getElementById('result').classList.add('hidden');
+  document.getElementById('intro').classList.remove('hidden');
+  document.getElementById('progressBar').style.width = '0%';
+}
+</script>
+</body>
+</html>
